@@ -1,0 +1,53 @@
+name: Payment-Processor CI/CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Docker-Build:
+    name: Docker Build
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: src/payment-processor
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Verify Docker
+        run: docker --version
+
+      - name: Build Docker Image
+        run: |
+          docker build -t payment-processor:latest .
+
+  Helm-Deploy:
+    name: Helm Deploy
+    needs: Docker-Build
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: Helm-Charts
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Verify Helm
+        run: helm version
+
+      - name: Verify Cluster Access
+        run: kubectl get nodes
+
+      - name: Helm Deploy
+        run: |
+          helm upgrade payment-processor ./payment-processor \
+            --install \
+            -f payment-processor/values-dev.yaml \
+            --set image.name=payment-processor:latest \
+            --namespace payment
