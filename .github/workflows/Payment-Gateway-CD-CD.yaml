@@ -50,5 +50,5 @@ jobs:
           helm upgrade payment-gateway ./payment-gateway \
             --install \
             -f payment-gateway/values-dev.yaml \
-            --set image.name=payment-gateway:latest
+            --set image.name=payment-gateway:latest \
             --namespace payment
