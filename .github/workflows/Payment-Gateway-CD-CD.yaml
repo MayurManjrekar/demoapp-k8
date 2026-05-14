@@ -51,3 +51,4 @@ jobs:
             --install \
             -f payment-gateway/values-dev.yaml \
             --set image.name=payment-gateway:latest
+            --namespace payment
