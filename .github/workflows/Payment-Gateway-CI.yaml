@@ -1,0 +1,65 @@
+name: Helm Build
+on:
+  workflow_dispatch:
+  push:
+    # branches: 
+    #   - Dev
+    #   - Test
+    #   - Prod
+    paths: 
+      - src/payment-gateway/**
+      - .github/workflows/applications_ci.yaml
+
+jobs:
+  Docker-Build:
+    name: 'Docker Build'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: /home/runner/work/demoapp-k8/demoapp-k8/src/payment-gateway
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+
+      - name: Verify Docker
+        run: docker --version
+
+      - name: Build Docker Image
+        run: |
+          docker build -t payment-gateway:latest .
+          docker save -o payment-gateway.tar payment-gateway:latest
+
+  Helm-Build: 
+    name: 'Helm Artifact'
+    needs: Docker-Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: /home/runner/work/demoapp-k8/demoapp-k8/Helm-Charts
+
+    steps:
+            
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Creating artifact
+        run: echo "Creating artifact"
+
+      - name: Update Helm Chart
+        run: |
+          sed -i -e 's/PROJECT_ID/${{vars.PROJECT_ID}}/g' ${{ github.workspace }}/values-dev.yaml
+          cat ${{ github.workspace }}/Application/Helm-Charts/cartservice/values.yaml
+
+      - uses: actions/upload-artifact@main
+        name: Uploading Application Artifact
+        with:
+          name: Application-Artifacts
+          path: ${{ github.workspace }}/Application/*          

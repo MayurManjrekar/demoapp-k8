@@ -1,0 +1,39 @@
+name: Helm Build
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - Dev
+      - Test
+      - Prod
+    paths: 
+      - src/payment-processor/**
+      - .github/workflows/applications_ci.yaml
+
+jobs:
+  Helm-Build: 
+    name: 'Helm Artifact'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: /home/runner/work/3-tier-GKE-Spanner/3-tier-GKE-Spanner/Application
+
+    steps:
+            
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Creating artifact
+        run: echo "Creating artifact"
+
+      - name: Update Helm Chart
+        run: |
+          sed -i -e 's/PROJECT_ID/${{vars.PROJECT_ID}}/g' -e 's/SPANNER_INSTANCE_NAME/${{vars.SPANNER_INSTANCE_NAME}}/g' -e 's/SPANNER_DATABASE_NAME/${{vars.SPANNER_DATABASE_NAME}}/g' ${{ github.workspace }}/Application/Helm-Charts/cartservice/values.yaml
+          cat ${{ github.workspace }}/Application/Helm-Charts/cartservice/values.yaml
+
+      - uses: actions/upload-artifact@main
+        name: Uploading Application Artifact
+        with:
+          name: Application-Artifacts
+          path: ${{ github.workspace }}/Application/*          
