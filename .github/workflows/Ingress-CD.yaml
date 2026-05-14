@@ -1,5 +1,4 @@
 name: Ingress Deploy
-
 on:
   workflow_dispatch:
 

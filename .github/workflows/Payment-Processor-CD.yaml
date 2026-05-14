@@ -1,13 +1,6 @@
 name: Payment Gateway Deploy
 on:
   workflow_dispatch:
-    # inputs:
-    #   helm_command:
-    #     description: "install/upgrade/rollback"
-    #     required: True
-# env:
-#     helm_command: ${{ inputs.helm_command}}
-
 jobs:
   Verify-Deployment-Dev:
     name: 'Verify Dev Deployment: Frontend Service'

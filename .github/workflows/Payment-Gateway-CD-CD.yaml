@@ -1,0 +1,53 @@
+name: Payment-Gateway CI/CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  Docker-Build:
+    name: Docker Build
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: src/payment-gateway
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Verify Docker
+        run: docker --version
+
+      - name: Build Docker Image
+        run: |
+          docker build -t payment-gateway:latest .
+
+  Helm-Deploy:
+    name: Helm Deploy
+    needs: Docker-Build
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: Helm-Charts
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Verify Helm
+        run: helm version
+
+      - name: Verify Cluster Access
+        run: kubectl get nodes
+
+      - name: Helm Deploy
+        run: |
+          helm upgrade payment-gateway ./payment-gateway \
+            --install \
+            -f payment-gateway/values-dev.yaml \
+            --set image.name=payment-gateway:latest

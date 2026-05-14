@@ -1,11 +1,6 @@
 name: Helm Build
 on:
   workflow_dispatch:
-  push:
-    branches: 
-      - Dev
-      - Test
-      - Prod
     paths: 
       - src/payment-processor/**
       - .github/workflows/applications_ci.yaml
