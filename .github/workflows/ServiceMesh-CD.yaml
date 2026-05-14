@@ -24,7 +24,7 @@ jobs:
           export PATH=$PWD/bin:$PATH
           istioctl version
           istioctl install --set profile=default -y
-          kubectl label namespace default istio-injection=enabled --overwrite
+          kubectl label namespace payment istio-injection=enabled --overwrite
 
       - name: Install Prometheus
         run: |
