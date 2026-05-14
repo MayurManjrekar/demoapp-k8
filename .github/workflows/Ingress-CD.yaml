@@ -1,39 +1,26 @@
 name: Ingress Deploy
+
 on:
   workflow_dispatch:
-  # push:
-  #   branches: 
-  #     - Dev
-  #     - Test
-  #     - Prod
 
 jobs:
-  Ingress-Deploy: 
-    name: 'Deploy Ingress'
-    runs-on: Self-Hosted
+  Ingress-Deploy:
+    name: Deploy Ingress
+    runs-on: self-hosted
+
     defaults:
       run:
         shell: bash
-        working-directory: /home/runner/work/demoapp-k8/demoapp-k8/Helm-Charts
+        working-directory: Helm-Charts
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # - name: Install kubectl
-      #   run: |
-      #     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-      #     chmod +x kubectl
-      #     sudo mv kubectl /usr/local/bin/
-
-      # - name: Configure Kubeconfig
-      #   run: |
-      #     mkdir -p ~/.kube
-      #     echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-
-      # - name: Deploy Ingress Manifest
-      #   run: |
-      #     kubectl apply -f ingress.yaml    
+      - name: Verify Current Path
+        run: |
+          pwd
+          ls -lrt
 
       - name: Verify Cluster Access
         run: kubectl get nodes
