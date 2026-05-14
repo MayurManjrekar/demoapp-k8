@@ -18,7 +18,7 @@ jobs:
 
     - name: Install Istio
       run: |
-          cd Istio-Artifacts
+          ls
           export PATH=$PWD/bin:$PATH
           chmod +x bin/istioctl
           istioctl install --set profile="default" -y
