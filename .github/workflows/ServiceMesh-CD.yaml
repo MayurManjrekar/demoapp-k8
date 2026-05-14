@@ -1,33 +1,35 @@
 name: Service Mesh Deploy
+
 on:
   workflow_dispatch:
 
 jobs:
+
   Install-Istio-Dev:
-    name: 'Istio Deployment'
+    name: Istio Deployment
     runs-on: self-hosted
-    defaults:
-      run:
-        shell: bash
-        working-directory: istio-1.20.2
 
     steps:
 
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Install Istio
-      run: |
-          ls
+      - name: Download Istio
+        run: |
+          curl -L https://istio.io/downloadIstio | sh -
+
+      - name: Install Istio
+        run: |
+          cd istio-*
           export PATH=$PWD/bin:$PATH
-          chmod +x bin/istioctl
-          istioctl install --set profile="default" -y
-          kubectl label namespace default istio-injection=enabled
-    
-    - name: Install prometheus
-      run: |
-         kubectl apply -f prometheus.yaml
+          istioctl version
+          istioctl install --set profile=default -y
+          kubectl label namespace default istio-injection=enabled --overwrite
 
-    - name: Install Grafana
-      run: |
-         kubectl apply -f grafana.yaml
+      - name: Install Prometheus
+        run: |
+          kubectl apply -f Helm-Charts/prometheus.yaml
+
+      - name: Install Grafana
+        run: |
+          kubectl apply -f Helm-Charts/grafana.yaml
